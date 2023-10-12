@@ -112,6 +112,12 @@ fun GameScreen(gameViewModel: GameViewModel = viewModel()) {
 
         GameStatus(score = gameUiState.score, modifier = Modifier.padding(20.dp))
 
+        if (gameUiState.isGameOver) {
+            FinalScoreDialog(
+                score = gameUiState.score,
+                onPlayAgain = { gameViewModel.resetGame() }
+            )
+        }
     }
 }
 
@@ -195,30 +201,40 @@ fun GameLayout(
  */
 @Composable
 private fun FinalScoreDialog(
-    score: Int, onPlayAgain: () -> Unit, modifier: Modifier = Modifier
+    score: Int,
+    onPlayAgain: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val activity = (LocalContext.current as Activity)
 
-    AlertDialog(onDismissRequest = {
-        // Dismiss the dialog when the user clicks outside the dialog or on the back
-        // button. If you want to disable that functionality, simply use an empty
-        // onCloseRequest.
-    },
-        title = { Text(text = stringResource(R.string.congratulations)) },
-        text = { Text(text = stringResource(R.string.you_scored, score)) },
+    AlertDialog(
+        onDismissRequest = {
+            // Dismiss the dialog when the user clicks outside the dialog or on the back
+            // button. If you want to disable that functionality, simply use an empty
+            // onDismissRequest.
+        },
+        title = { Text(stringResource(R.string.congratulations)) },
+        text = { Text(stringResource(R.string.you_scored, score)) },
         modifier = modifier,
         dismissButton = {
-            TextButton(onClick = {
-                activity.finish()
-            }) {
+            TextButton(
+                onClick = {
+                    activity.finish()
+                }
+            ) {
                 Text(text = stringResource(R.string.exit))
             }
         },
         confirmButton = {
-            TextButton(onClick = onPlayAgain) {
+            TextButton(
+                onClick = {
+                    onPlayAgain()
+                }
+            ) {
                 Text(text = stringResource(R.string.play_again))
             }
-        })
+        }
+    )
 }
 
 @Preview(showBackground = true)
